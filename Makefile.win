@@ -1,0 +1,45 @@
+# Project: boring.dev
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = Frame.o FrameInfoPlus.o Segment.o ../cgrraphics/main.o JoshuaMath.o debug.o $(RES)
+LINKOBJ  = Frame.o FrameInfoPlus.o Segment.o ../cgrraphics/main.o JoshuaMath.o debug.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib"  
+INCS =  -I"C:/Dev-Cpp/include"  -I"C:/Joshua/C++ segment" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"C:/Joshua/C++ segment" 
+BIN  = boring.exe
+CXXFLAGS = $(CXXINCS)   -ansi -traditional-cpp
+CFLAGS = $(INCS)   -ansi -traditional-cpp
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before boring.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "boring.exe" $(LIBS)
+
+Frame.o: Frame.cpp
+	$(CPP) -c Frame.cpp -o Frame.o $(CXXFLAGS)
+
+FrameInfoPlus.o: FrameInfoPlus.cpp
+	$(CPP) -c FrameInfoPlus.cpp -o FrameInfoPlus.o $(CXXFLAGS)
+
+Segment.o: Segment.cpp
+	$(CPP) -c Segment.cpp -o Segment.o $(CXXFLAGS)
+
+../cgrraphics/main.o: ../cgrraphics/main.cpp
+	$(CPP) -c ../cgrraphics/main.cpp -o ../cgrraphics/main.o $(CXXFLAGS)
+
+JoshuaMath.o: JoshuaMath.cpp
+	$(CPP) -c JoshuaMath.cpp -o JoshuaMath.o $(CXXFLAGS)
+
+debug.o: debug.cpp
+	$(CPP) -c debug.cpp -o debug.o $(CXXFLAGS)

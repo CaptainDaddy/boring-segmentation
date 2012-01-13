@@ -1,0 +1,8 @@
+This is a stupid project, because it won't accomplish much.  However it is
+a good exercise in debugging and cursing.  That said, I wish to take video
+files, strip the audio and turn the frames into bitmaps.  Then I'm going 
+to segment the bitmaps and look for similarities.  I'm working on a much
+better scheme, which will be in the split_space repo or a similarly named
+one soon.
+
+the lib folder contains some mathematics and debugging fucntionality.
