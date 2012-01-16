@@ -5,7 +5,7 @@ UnitCount=12
 Type=1
 Ver=1
 ObjFiles=
-Includes="C:\Joshua\C++ segment"
+Includes="C:\Joshua\C++ segment";C:\Joshua\lib
 Libs=
 PrivateResource=
 ResourceIncludes=
@@ -118,9 +118,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit9]
-FileName=JoshuaMath.h
+FileName=..\lib\debug.cpp
 CompileCpp=1
-Folder=
+Folder=boring.dev
 Compile=1
 Link=1
 Priority=1000
@@ -138,9 +138,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit10]
-FileName=JoshuaMath.cpp
+FileName=..\lib\debug.h
 CompileCpp=1
-Folder=
+Folder=boring.dev
 Compile=1
 Link=1
 Priority=1000
@@ -148,9 +148,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit11]
-FileName=debug.h
+FileName=..\lib\JoshuaMath.cpp
 CompileCpp=1
-Folder=
+Folder=boring.dev
 Compile=1
 Link=1
 Priority=1000
@@ -158,9 +158,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit12]
-FileName=debug.cpp
+FileName=..\lib\JoshuaMath.h
 CompileCpp=1
-Folder=
+Folder=boring.dev
 Compile=1
 Link=1
 Priority=1000

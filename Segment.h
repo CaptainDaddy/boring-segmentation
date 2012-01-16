@@ -23,7 +23,7 @@ class Segment{
 			void setData(int ** inD,int *dim);//dim[0]=rows,dim[1]=cols
 			int dataLength();
       private:
-              
+            int length;  
 			int * data;
 			char * segName;
 };

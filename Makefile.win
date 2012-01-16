@@ -5,11 +5,11 @@ CPP  = g++.exe
 CC   = gcc.exe
 WINDRES = windres.exe
 RES  = 
-OBJ  = Frame.o FrameInfoPlus.o Segment.o ../cgrraphics/main.o JoshuaMath.o debug.o $(RES)
-LINKOBJ  = Frame.o FrameInfoPlus.o Segment.o ../cgrraphics/main.o JoshuaMath.o debug.o $(RES)
+OBJ  = Frame.o FrameInfoPlus.o Segment.o ../cgrraphics/main.o ../lib/debug.o ../lib/JoshuaMath.o $(RES)
+LINKOBJ  = Frame.o FrameInfoPlus.o Segment.o ../cgrraphics/main.o ../lib/debug.o ../lib/JoshuaMath.o $(RES)
 LIBS =  -L"C:/Dev-Cpp/lib"  
-INCS =  -I"C:/Dev-Cpp/include"  -I"C:/Joshua/C++ segment" 
-CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"C:/Joshua/C++ segment" 
+INCS =  -I"C:/Dev-Cpp/include"  -I"C:/Joshua/C++ segment"  -I"C:/Joshua/lib" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"C:/Joshua/C++ segment"  -I"C:/Joshua/lib" 
 BIN  = boring.exe
 CXXFLAGS = $(CXXINCS)   -ansi -traditional-cpp
 CFLAGS = $(INCS)   -ansi -traditional-cpp
@@ -38,8 +38,8 @@ Segment.o: Segment.cpp
 ../cgrraphics/main.o: ../cgrraphics/main.cpp
 	$(CPP) -c ../cgrraphics/main.cpp -o ../cgrraphics/main.o $(CXXFLAGS)
 
-JoshuaMath.o: JoshuaMath.cpp
-	$(CPP) -c JoshuaMath.cpp -o JoshuaMath.o $(CXXFLAGS)
+../lib/debug.o: ../lib/debug.cpp
+	$(CPP) -c ../lib/debug.cpp -o ../lib/debug.o $(CXXFLAGS)
 
-debug.o: debug.cpp
-	$(CPP) -c debug.cpp -o debug.o $(CXXFLAGS)
+../lib/JoshuaMath.o: ../lib/JoshuaMath.cpp
+	$(CPP) -c ../lib/JoshuaMath.cpp -o ../lib/JoshuaMath.o $(CXXFLAGS)

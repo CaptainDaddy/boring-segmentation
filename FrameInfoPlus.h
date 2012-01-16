@@ -13,7 +13,7 @@ class FrameInfoPlus{
       public:
             FrameInfoPlus();
             void loadFrameInfo(FILE * fin,int flag);
-	        void writeout(FILE * o);
+	        void writeout(FILE * o,int flag);
            	void printStuff();
             int segsInit();
            	int getSegWidth();
@@ -21,7 +21,6 @@ class FrameInfoPlus{
            	int getHeight();
        	    int number_of_segments();
             void setSegmentHW();
-            void pixelsSegPrepInit();
             void setSegPercent(int);
             uint32_t get_filesz();
             uint16_t get_creator1();
@@ -61,9 +60,12 @@ class FrameInfoPlus{
             //$$$
             int segWidth;
             int segHeight;
+            //The rest of the header information I read as characters because
+            //I want to make sure that when I write it later I don't alias information
+            char * rest_of_the_header_stuff;
+            int size_of_the_rest;
             //these values below will be set by driver/methods and used for operations but not stored in a file
             int segPercent;
-            int cbyte;
   //int number_of_segments; 
 };
 #endif

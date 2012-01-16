@@ -17,6 +17,7 @@ using namespace std;
 Frame::Frame(string inName){
 		if(inName[(inName.length()-1)]=='p') this->readBMP(inName);
 		else readBusted(inName);
+		this->frameHeader.printStuff();
 }
 	
 void Frame::setSegHW(){
@@ -30,15 +31,18 @@ void Frame::segsInit(string frameN){
 	this->pieces=(Segment *)calloc(this->number_of_segments,sizeof(Segment));
 	for(a=0;a<this->number_of_segments;a++){
 			sprintf(outName,"%s.Segment%09d",frameN.c_str(), a);//put  the number on the end
-           // printf("\n%s\n",outName);
             this->pieces[a].setName(outName);
 	}
 }		
 
+void Frame::print_surface(){
+     int r,c;
+     for(r=0;r<this->frameHeader.get_height();r++){
+        for(c=0;c<frameHeader.get_width();c++)printf("%8d ",(pixels[r][c]));stamp("\n");stamp_int(c);}
+}
 void Frame::setPercent(int in){this->frameHeader.setSegPercent(in);setShitUp();}
 //this must be adjusted so that setPercent happens first no matter what.
 void Frame::setShitUp(){
-		frameHeader.pixelsSegPrepInit();
 		setSegHW();
 	}
 
@@ -50,41 +54,42 @@ void Frame::splitToPieces(){
 		int segW=this->frameHeader.getSegWidth();
         seg_dim[0]=segH;
         seg_dim[1]=segW;
-		int piece[segH][segW];
+		int **piece= new int *[segH];
+        for (r=0;r<segH;r++) piece[r]=new int [segW];
+        
 		for(r=0;r<(this->sizeOfPixels[0]);r+=segH)
-		   for(c=0;r<(this->sizeOfPixels[1]);r+=segW){
+		   for(c=0;c<(this->sizeOfPixels[1]);c+=segW){
 		      for(rp=0;rp<segH;rp++){
 		         for(cp=0;cp<segW;cp++){
      			    piece[rp][cp]=0;
                  }
-              } 
-		    for(rp=0;(rp<segH)
-				&&((rp+r*segH)<this->frameHeader.getHeight());rp++){
-			   for(cp=0;(cp<segW)
-				   &&((cp+c*segW)<this->sizeOfPixels[1]);cp++){
-					piece[rp][cp]=this->pixels[r*segH+rp][c*segW+cp];
-                    stamp("piece");printf("%d,%d::%d\n",rp,cp,piece[rp][cp]);
+              }
+            
+		      for(rp=0;(rp<segH)&&((rp+r)<this->frameHeader.getHeight());rp++){
+			     for(cp=0;(cp<segW)&&((cp+c)<this->sizeOfPixels[1]);cp++){
+  				    piece[rp][cp]=this->pixels[r+rp][c+cp];
 			    }
               }
-for(r=0;r<segH;r++){
-for(c=0;r<segW;c++)printf("%d  ",piece[r][c]);stamp("\n");}
-hold();
-            (this->pieces)[r*segH+c].setData((int**)piece,seg_dim);
-            scream('*');
-			}
+              (this->pieces)[(r/segH)*(int)sqrt(this->number_of_segments)+c/segW].setData((int**)piece,seg_dim);
+           }
 	}
 void Frame::writeAllSegments(){
 		int a;
 		int stop =this->frameHeader.number_of_segments(); 
-		for(a=0;a<stop;a++) this->pieces[a].writeSegment();
+		for(a=0;a<stop;a++)((this->pieces)[a]).writeSegment();
 	}
 void Frame::instantiate_pixels(int rows,int cols){
      int r,c;
      this->pixels=(int **)calloc(rows, sizeof(int*));
      for(r=0;r<rows;r++) (this->pixels)[r]=(int *)calloc(cols, sizeof(int));
 }
-	
-void Frame::getItTogether(){//not good
+void Frame::writeBusted(){
+	    FILE * out = fopen((this->FrameName += ".head").c_str(),"wb");	
+	    this->frameHeader.writeout(out,1);
+        fclose(out);
+        writeAllSegments();
+}   
+void Frame::getItTogether(){//not good?
 		int r,c,rp,cp,rows,cols;
 	    rows=this->frameHeader.get_height();
 	    cols=this->frameHeader.get_width()*this->frameHeader.get_bitspp()/32;
@@ -94,9 +99,9 @@ void Frame::getItTogether(){//not good
 		for(r=0;r<rows;r+=this->frameHeader.getSegHeight())
 		   for(c=0;c<cols;r+=this->frameHeader.getSegWidth()){
 		      for(rp=0;(rp<this->frameHeader.getSegHeight())
-				&&(rp+r*this->frameHeader.getSegHeight()<this->frameHeader.get_height());rp++)
+				&&(rp+r<this->frameHeader.get_height());rp++)
 			    for(cp=0;(cp<this->frameHeader.getSegWidth())
-				   &&(cp+c*this->frameHeader.getSegWidth())<cols;cp++)
+				   &&(cp+c)<cols;cp++)
 			       this->pixels[r+rp][c+cp] = (this->pieces[r*this->frameHeader.getSegHeight()+c]).getInt(rp*this->frameHeader.getSegWidth()+cp);
 			}		
 	}
@@ -115,38 +120,32 @@ void Frame::writePixels(FILE * o){
 		c= this->sizeOfPixels[1];
 		for(i=0;i<r;i++)
 			for(j=0;j<c;j++)
-				fwrite(&(this->pixels[i][j]),sizeof(int),1,o);
+				fwrite(&(this->pixels[i][j]),(this->frameHeader.get_bitspp())/8,1,o);
 	}
 void Frame::writeBMP(){
 //        char * name=
 		FILE * out = fopen((this->FrameName += ".bmp").c_str(),"wb");
-		this->frameHeader.writeout(out);
+		this->frameHeader.writeout(out,0);
 		this->writePixels(out);
 		fclose(out);
 		}
 		
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%555
-//one thing I'm doing here is actually just reading one byte of pixel info
-//in at a time and storing each byte int the array.  Since bitmap pixel info
-//is padded to 4 byte multiples anyway this will be ok for now.
 void Frame::readBMP(string fName){
 		int rows,cols,r,c;
 	    FILE * in = NULL;
 		this->FrameName= string(fName.substr(0,fName.length()-4));
-		printf("name:%s", fName.c_str());
 	    in = fopen(fName.c_str(),"rb");
 		this->frameHeader.loadFrameInfo(in,0);	
 		rows=this->frameHeader.get_height();
-		cols=this->frameHeader.get_width()*this->frameHeader.get_bitspp()/32;
-		if(this->frameHeader.get_height()*this->frameHeader.get_bitspp()%32!=0) rows++;
-		rows*=4;
+		cols=this->frameHeader.get_width();
 		instantiate_pixels(rows,cols);
 		this->sizeOfPixels[0]=rows;
 		this->sizeOfPixels[1]=cols;
 		fseek(in,frameHeader.get_bmp_offset(),SEEK_SET);
-		for(c=0;c<cols;c++){
-    		for(r=0;r<rows;r++){
-				fread(&(this->pixels[r][c]),sizeof(int),1,in);	
+   		for(r=0;r<rows;r++){
+     		for(c=0;c<cols;c++){
+				fread(&(this->pixels[r][c]),(this->frameHeader.get_bitspp())/8,1,in);
             }
         }
         fclose(in);
@@ -156,8 +155,9 @@ void Frame::readBusted(string headName){
 		FILE * in = NULL;
 		//this->frameHeader=new FrameInfoPlus();//again, unneccessary and improper
 	    in = fopen(headName.c_str(),"rb");
-			this->frameHeader.loadFrameInfo(in,1);
-      		assembleSegments();
+		this->frameHeader.loadFrameInfo(in,1);
+scream('*');
+      	assembleSegments();
         fclose(in);
 		
 }

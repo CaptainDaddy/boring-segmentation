@@ -28,22 +28,17 @@ void FrameInfoPlus::setSegmentHW(){
 	this->segWidth=roundUpDiv(this->width*this->segPercent,100);
     this->segHeight=roundUpDiv(this->height*this->segPercent,100);
 }
-void FrameInfoPlus::pixelsSegPrepInit(){//takes information about the pixel data and sets information in the header
-		this->cbyte=(this->width*this->bitspp/32);
-		if(!(this->width * this-> bitspp % 32==0))
-			this-> cbyte++;
-		this-> cbyte*=1;//32 bit pixel representer for now
-	}
 int FrameInfoPlus::segsInit(){
 		this->printStuff();
 		int h=roundUpDiv(this-> height,this-> segHeight);
-		int w=roundUpDiv(this-> cbyte,this-> segWidth);
+		int w=roundUpDiv(this-> width,this-> segWidth);
         return(h*w);
 }		
 void FrameInfoPlus::loadFrameInfo(FILE * fin,int flag){
       struct bmpfile_magic mgnum;
       struct bmpfile_header bmphead;
       BITMAPINFOHEADER bminfoh;
+      int pos=0;
       if(fin!=NULL){                            
         fread(&mgnum,sizeof(bmpfile_magic),1,fin);
         fread(&bmphead, sizeof(struct bmpfile_header), 1, fin);
@@ -53,9 +48,17 @@ void FrameInfoPlus::loadFrameInfo(FILE * fin,int flag){
       if(flag==1){
           fread(&(this->segWidth), sizeof(int),1,fin);
           fread(&(this->segHeight), sizeof(int),1,fin);
-      }    
+          fread(&(this->size_of_the_rest), sizeof(int),1,fin);
+      }else{
+      this->size_of_the_rest=(this->bmp_offset-ftell(fin)*2);
+      }
+      this->rest_of_the_header_stuff=(char*)calloc(size_of_the_rest,sizeof(char));
+//      for(pos=0;ftell(fin)<this->bmp_offset;pos++)
+        for(pos=0;pos<size_of_the_rest;pos++)
+          fread(&(rest_of_the_header_stuff[pos]),sizeof(char),1,fin);  
+      
 }
-void FrameInfoPlus::setSegPercent(int in){this->segPercent=in;}
+void FrameInfoPlus::setSegPercent(int in){if(in>0&&in<100)this->segPercent=in;}
 void FrameInfoPlus::compileIn(struct bmpfile_magic mnm,
                                      struct bmpfile_header bhd,
                                      BITMAPINFOHEADER bfh){
@@ -78,7 +81,8 @@ void FrameInfoPlus::compileIn(struct bmpfile_magic mnm,
       this->nimpcolors=bfh.nimpcolors;
 }
 
-void FrameInfoPlus::writeout(FILE * o){
+void FrameInfoPlus::writeout(FILE * o,int flag){
+     int pos;
      frameInfo out_struct;
       out_struct.magic[0]=this->magic[0];
       out_struct.magic[1]=this->magic[1];
@@ -98,7 +102,13 @@ void FrameInfoPlus::writeout(FILE * o){
       out_struct.ncolors=this->ncolors;
       out_struct.nimpcolors=this->nimpcolors;   
      fwrite((frameInfo *)(&(out_struct)), sizeof( frameInfo), 1,o);
-	}
+     if(flag==1){
+          fwrite((int *)(&(this->segWidth)), sizeof(int),1,o);
+          fwrite((int *)(&(this->segHeight)), sizeof(int),1,o);
+          fwrite((int *)(&(this->size_of_the_rest)), sizeof(int),1,o);
+     }for(pos=0;pos<this->size_of_the_rest;pos++)     
+          fwrite((char *)(&(rest_of_the_header_stuff[pos])), sizeof(char),1,o);
+}
 void FrameInfoPlus::printStuff(){
 //only the stuff directly from the bitmap
 			printf("magic:[ %d , %d ]\n",this-> magic[0],this-> magic[1]);

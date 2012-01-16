@@ -5,6 +5,7 @@
 #include "FrameInfoPlus.h"
 #include "Segment.h"
 #include "debug.h"
+#include<math.h>
 #include <iostream>
 using namespace std;
 class Frame {
@@ -14,17 +15,17 @@ class Frame {
 	Frame(string inName);
 	void setPercent(int in);
 	void splitToPieces();
-	void writeAllSegments();
-	void getItTogether();
 	void readAllSegments();
 	void assembleSegments();
 	void writePixels(FILE *);
 	void writeBMP();
+    void writeBusted();
 	void readBMP(string fName);
 	void readBusted(string headName);
+	void getItTogether();
     void printHeader();
     void setShitUp();
-    
+    void print_surface();
     private:
             
 	string FrameName;
@@ -36,5 +37,6 @@ class Frame {
 	void setSegHW();
 	void segsInit(string);
     void instantiate_pixels(int rows,int cols);
+	void writeAllSegments();
 };
 #endif

@@ -35,11 +35,11 @@ using namespace std;
 		void Segment::writeSegment(){
 				int a,d=this->dataLength();
 				FILE * out = NULL;
-			        out = fopen(segName,"wb");
+		        out = fopen(segName,"wb");
 				for(a=0;a<d;a++){
                         fwrite(&(this->data[a]), sizeof(int),1,out);         
-					}
-			}
+				}fclose(out);
+		}
 		void Segment::setName(char * inName){
 				this->segName = (char *)calloc(strlen(inName)+1,sizeof(char));
 				strcpy(this->segName,inName);
@@ -52,19 +52,13 @@ using namespace std;
 		void Segment::setData(int ** inD,int * dim){
 				int r,c;
 				this->data = (int *)calloc (dim[0]*dim[1],sizeof (int));
-scream('*');
-for(r=0;r<dim[0]*dim[1];r++){
-for(c=0;r<dim[0]*dim[1];r++)printf("%d  ",inD[r][c]);stamp("\n");}
-hold();
 				for(r=0;r<dim[0];r++){
 					for(c=0;c<dim[1];c++){
-stamp("in the loop:\n");
-stamp_int(r*dim[1]+c);stamp("\n");                  
-stamp_int(inD[r][c]);stamp("\n");                  
-stamp_int(this->data[r*dim[1]+c]);stamp("\n");                  
+                  
 						this->data[r*dim[1]+c]=inD[r][c];
                     }
                 }
+                this->length=dim[0]*dim[1];
 		}
 
 
