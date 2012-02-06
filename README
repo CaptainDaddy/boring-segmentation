@@ -1,10 +1,11 @@
-This is a stupid project, because it won't accomplish much.  However it is
-a good exercise in debugging and cursing.  That said, I wish to take video
-files, strip the audio and turn the frames into bitmaps.  Then I'm going 
-to segment the bitmaps and look for similarities.  I'm working on a much
-better scheme, which will be in the split_space repo or a similarly named
-one soon.
+boring-segmentation
 
-the lib folder contains some mathematics and debugging fucntionality.
+This project isn't very useful, and I've put it on the back burner for this reason.  The idea behind this project
+is that once a video has been split into bitmaps then those bitmaps could be segmented and then the segments could
+be analyzed for similarities.  I began this as a prelude to cooler compression algorithms for my senior design course.
+It almost works except there is some weird thing going on with the way the .head file gets written that screws up the
+way that it would reconstruct the bmp.  I'm working on the split_space_dedup project which will be a complete video
+compression suite now, and so am about to delete this repository.  The only reason that I would not would be to figure
+out the bug in the file I/O.
 
-This project is not yet operational but should be in a day or so.
+Stay tuned for much cooler stuff.
